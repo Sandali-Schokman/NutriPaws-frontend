@@ -19,7 +19,7 @@ function RecommendedProducts() {
   const fetchProducts = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/products", {
-        headers: { Email: user?.email || "" },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(res.data);
     } catch (err) {
@@ -31,7 +31,7 @@ function RecommendedProducts() {
   const fetchDog = async () => {
     try {
       const res = await axios.get(`http://localhost:8080/api/dogs/${dogId}`, {
-        headers: { Email: user?.email || "" },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedDog(res.data);
     } catch (err) {
@@ -43,10 +43,8 @@ function RecommendedProducts() {
   const fetchNutritionPlan = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/nutrition/plan/${dogId}`,
-        {
-          headers: { Email: user?.email || "" },
-        }
+        `http://localhost:8080/api/nutrition/plans/${dogId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setNutritionPlan(res.data);
     } catch (err) {
@@ -81,8 +79,8 @@ function RecommendedProducts() {
           ? p.ingredients.map((i) => i.toLowerCase())
           : [];
 
-        if (dogAllergies.some((allergy) => ingredients.includes(allergy))) return false;
-        if (dogHealthConditions.some((cond) => ingredients.includes(cond))) return false;
+        if (dogAllergies.some((a) => ingredients.includes(a))) return false;
+        if (dogHealthConditions.some((c) => ingredients.includes(c))) return false;
 
         return true;
       })
@@ -98,57 +96,47 @@ function RecommendedProducts() {
     setRecommended(filtered);
   }, [products, selectedDog, nutritionPlan]);
 
-  // Add product to feeding schedule (merge multiple products)
+  // Add product to feeding schedule
   const addToFeedingSchedule = async (product) => {
     if (!selectedDog || !nutritionPlan) return;
 
-    const caloriesPer100g = product.calories_per_100g || 0;
+
+    const caloriesPer100g = product.caloriesPer100g || 0;
     if (caloriesPer100g <= 0) {
       toast.error("Product calories not defined!");
       return;
     }
 
-    const dailyPortion = (nutritionPlan.target_calories_per_day / caloriesPer100g) * 100;
+    const dailyPortion =
+      (nutritionPlan[0].target_calories_per_day / caloriesPer100g) * 10;
     const meals = 3;
     const portionPerMeal = Math.round(dailyPortion / meals);
 
     try {
-      // Get existing schedule
-      const existingRes = await axios.get(
-        `http://localhost:8080/api/dogs/${dogId}/feeding-schedule`,
-        { headers: { Email: user?.email || "" } }
-      );
-      const existingSchedule = existingRes.data || [];
-
-      // Merge new product into each meal
-      const updatedSchedule = Array.from({ length: meals }, (_, i) => {
-        const existingMeal = existingSchedule[i] || { mealNumber: i + 1, items: [] };
-        return {
-          mealNumber: i + 1,
-          items: [
-            ...existingMeal.items,
-            { productId: product.id, productName: product.name, portionG: portionPerMeal },
-          ],
-        };
-      });
-
-      // Save updated schedule
       await axios.post(
-        `http://localhost:8080/api/dogs/${dogId}/feeding-schedule`,
-        { schedule: updatedSchedule },
-        { headers: { Email: user?.email || "" } }
+        `http://localhost:8080/api/dogs/feeding-schedule/${dogId}/add`,
+        {
+          productId: product.id,
+          productName: product.name,
+          portionG: portionPerMeal,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success(`${product.name} added to feeding schedule (${portionPerMeal}g x ${meals} meals)`);
+      toast.success(
+        `${product.name} added to feeding schedule (${portionPerMeal}g x ${meals} meals)`
+      );
+
+      // Dispatch custom event so FeedingSchedule.js refreshes
+      window.dispatchEvent(new Event("feedingScheduleUpdated"));
     } catch (err) {
-      console.error(err);
+      console.error("Failed to add product:", err);
       toast.error("Failed to add product to feeding schedule");
     }
   };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-        
       <h2 className="text-2xl font-bold text-[#31ab3a] mb-6 text-center">
         🐶 Recommended Products for {selectedDog?.name || "your dog"}
       </h2>
