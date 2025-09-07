@@ -243,6 +243,16 @@ function NutritionPlanner() {
               >
                 View Recommended Products
               </button>
+              <button
+                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={() =>
+                  navigate(`/customer/recommended-ingredients/${selectedDog.id}`, {
+                    state: { selectedDog, nutritionPlan: plan },
+                  })
+                }
+              >
+                View Recommended Ingredients
+              </button>
           </div>
           {/* Feeding Schedule */}
           <FeedingSchedule selectedDog={selectedDog} plan={plan} />

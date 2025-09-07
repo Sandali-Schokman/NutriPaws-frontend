@@ -115,7 +115,7 @@ function Navbar() {
 
           {currentUser && role === "CUSTOMER" && (
             <>
-              <Link to="/customer/dashboard" onClick={() => setIsOpen(false)} className="hover:text-gray-100">Customer Dashboard</Link>
+              <Link to="/customer/dashboard" onClick={() => setIsOpen(false)} className="hover:text-gray-100">Pet Profile Manager</Link>
               <Link to="/customer/nutrition-planner" onClick={() => setIsOpen(false)} className="hover:text-gray-100">Nutrition Planner</Link>
               <Link to="/customer/orders" onClick={() => setIsOpen(false)} className="hover:text-gray-100">My Orders</Link>
               <Link to="/cart" onClick={() => setIsOpen(false)} className="relative flex items-center hover:text-gray-100">
