@@ -4,10 +4,12 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function FeedingSchedule({selectedDog}) {
   const { token } = useAuth();
   const [schedule, setSchedule] = useState([]);
+  const navigate = useNavigate();
 
   const fetchSchedule = async () => {
     try {
@@ -37,6 +39,13 @@ function FeedingSchedule({selectedDog}) {
       <h2 className="text-2xl font-bold text-[#31ab3a] mb-6 text-center">
         🐶 Feeding Schedule
       </h2>
+      <button
+  className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded"
+  onClick={() => navigate(`/customer/shopping-list/${selectedDog.id}`)}
+>
+  View Weekly Shopping List
+</button>
+
 
       {schedule.length === 0 ? (
         <p className="text-center text-gray-500">No feeding schedule yet.</p>

@@ -28,6 +28,7 @@ function AdminDashboard() {
     address: ""
   });
   const auth = getAuth();
+  const user = getAuth().currentUser;
 
   // === Fetch All Data ===
   const fetchUsers = async () => {
@@ -66,7 +67,7 @@ function AdminDashboard() {
   const fetchOrders = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/orders", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Email: user.email },
       });
       setOrders(res.data);
     } catch (err) {

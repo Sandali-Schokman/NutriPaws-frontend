@@ -6,24 +6,26 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, Legend
 } from "recharts";
+import { getAuth } from "firebase/auth";
 
 function SellerDashboard() {
   const { token, currentUser } = useAuth();
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const user = getAuth().currentUser;
 
   // === Fetch seller-specific data ===
   const fetchSellerData = async () => {
     try {
       // Get seller orders
-      const ordersRes = await axios.get("http://localhost:8080/api/orders/seller", {
-        headers: { Authorization: `Bearer ${token}` },
+      const ordersRes = await axios.get("http://localhost:8080/api/seller-orders/my", {
+        headers: { Email: user.email },
       });
       setOrders(ordersRes.data);
 
       // Get seller products
-      const productsRes = await axios.get("http://localhost:8080/api/products/seller", {
-        headers: { Authorization: `Bearer ${token}` },
+      const productsRes = await axios.get(`http://localhost:8080/api/products/seller/${user.email}`, {
+        headers: { Email: user.email },
       });
       setProducts(productsRes.data);
 
@@ -42,9 +44,8 @@ function SellerDashboard() {
 
   // Sales trend chart
   const salesData = orders.map((o) => ({
-    date: o.createdAt
-      ? new Date(o.createdAt.seconds * 1000).toLocaleDateString()
-      : "N/A",
+    date: o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "N/A",
+
     revenue: o.totalPrice || 0,
   }));
 

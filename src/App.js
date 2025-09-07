@@ -32,6 +32,7 @@ import RecommendedProducts from "./pages/customer/RecommendedProducts";
 import FeedingSchedule from "./pages/customer/FeedingSchedule"; 
 import FeedingReminders from "./pages/customer/FeedingReminders";
 import RecommendedIngredients from "./pages/customer/RecommendedIngredients";
+import ShoppingList from "./pages/customer/ShoppingList";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
@@ -149,6 +150,14 @@ function App() {
           {
             <ProtectedRoute requiredRole="CUSTOMER">
               <RecommendedIngredients />
+            </ProtectedRoute>
+          }
+          />
+          <Route path="/customer/shopping-list/:dogId"
+          element=
+          {
+            <ProtectedRoute requiredRole="CUSTOMER">
+              <ShoppingList />
             </ProtectedRoute>
           }
           />
