@@ -30,6 +30,8 @@ import AdminIngredientForm from "./pages/admin/AdminIngredientForm";
 import Cart from "./pages/customer/Cart";
 import RecommendedProducts from "./pages/customer/RecommendedProducts";
 import FeedingSchedule from "./pages/customer/FeedingSchedule"; 
+import FeedingReminders from "./pages/customer/FeedingReminders";
+import RecommendedIngredients from "./pages/customer/RecommendedIngredients";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
@@ -131,6 +133,22 @@ function App() {
           {
             <ProtectedRoute requiredRole="CUSTOMER">
               <FeedingSchedule />
+            </ProtectedRoute>
+          }
+          />
+          <Route path="/customer/feeding-reminders/:dogId"
+          element=
+          {
+            <ProtectedRoute requiredRole="CUSTOMER">
+              <FeedingReminders />
+            </ProtectedRoute>
+          }
+          />
+          <Route path="/customer/recommended-ingredients/:dogId"
+          element=
+          {
+            <ProtectedRoute requiredRole="CUSTOMER">
+              <RecommendedIngredients />
             </ProtectedRoute>
           }
           />
